@@ -24,5 +24,9 @@ find "$folder" -type f -name "$extension" | while read line;
         # Show the file name
         echo ">>> $filename"
 
+        # The filter
         grep -Eoih class\=\"[^\"]*\" "$line" | awk -F\" "{print \$2}" | sort | uniq --count
+
+        # New line
+        echo
 done
