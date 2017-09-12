@@ -18,6 +18,9 @@ if [ "x" != "x$2" ]; then extension="*.$2"; else extension="*"; fi
 
 find "$folder" -type f -name "$extension" | while read line;
     do
+        # If files is found
+        found=true
+
         # Extract file name from line
         filename=`basename "$line"`
 
@@ -30,3 +33,16 @@ find "$folder" -type f -name "$extension" | while read line;
         # New line
         echo
 done
+
+# Test if folder is not empty
+count=`ls -1 $folder/$extension 2>/dev/null | wc -l`
+if [ $count != 0 ]; then
+    # The title
+    echo ">>> Masterlist"
+
+    # Search for all files
+    grep -Eoih class\=\"[^\"]*\" $folder/$extension | awk -F\" "{print \$2}" | sort | uniq --count
+
+    # New line
+    echo
+fi
