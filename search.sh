@@ -35,13 +35,13 @@ find "$folder" -type f -name "$extension" | while read line;
 done
 
 # Test if folder is not empty
-count=`ls -1 $folder/$extension 2>/dev/null | wc -l`
+count=`ls -1 "$folder"/$extension 2>/dev/null | wc -l`
 if [ $count != 0 ]; then
     # The title
     echo ">>> Masterlist"
 
     # Search for all files
-    grep -Eoih class\=\"[^\"]*\" $folder/$extension | awk -F\" "{print \$2}" | sort | uniq --count
+    grep -Eoih class\=\"[^\"]*\" "$folder"/$extension | awk -F\" "{print \$2}" | sort | uniq --count
 
     # New line
     echo
