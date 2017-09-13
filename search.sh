@@ -41,7 +41,21 @@ if [ $count != 0 ]; then
     echo ">>> Masterlist"
 
     # Search for all files
-    grep -Eoih class\=\"[^\"]*\" "$folder"/$extension | awk -F\" "{print \$2}" | sort | uniq --count
+    grep -Eoih class\=\"[^\"]*\" "$folder"/$extension | awk -F\" "{print \$2}" | sort | uniq --count | \
+    while read count class
+        do
+            # Matched files
+            files_match=`grep class\=\"[$class]*\" --files-with-matches "$folder"/$extension`
+
+            # Names of matched files
+            files=`basename -a $files_match | tr "\n" " "`
+
+            # Count of matched files
+            files_count=`echo "$files_match" | wc -l`
+
+            # Print formatted string
+            printf "%7d\t%-20s\t%-4s%s\n" "$count" "$class" "$files_count" "$files"
+    done
 
     # New line
     echo
