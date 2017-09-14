@@ -37,7 +37,7 @@ if [ "$1" == "-D" ]
 fi
 
 # Search for all files
-files=`find "$folder" -type f -name "$extension"`
+files=`find "$folder" -type f -iname "$extension"`
 
 # Read all classes from all files
 [ "$DEBUG" == "1" ] && echo -n "$files" | while read line;
