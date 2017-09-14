@@ -3,9 +3,9 @@
 function help
 {
     echo
-    echo "To start the analysis, you must specify the path to the directory with the files"
+    echo "Rename all files with spaces in name to same names but with undercovers"
     echo
-    echo "  ./$(basename $0) <path/to/folder> [<extension>]"
+    echo "  ./$(basename $0) <path/to/folder>"
     echo
 
     exit
