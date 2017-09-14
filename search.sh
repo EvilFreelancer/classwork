@@ -39,12 +39,10 @@ if [ "$1" == "-D" ]
         DEBUG="1"
 fi
 
-#echo "$extension"
-#echo find "$folder" -type f -iname $extension
-#exit
-
 # Search for all files
-files=`find "$folder" -type f -iname "$extension"`
+files=`find "$folder" -type f -iname "$extension" | sed -r 's/\ /\\\ /g'`
+echo "$files"
+exit
 
 # Read all classes from all files
 [ "$DEBUG" == "1" ] && echo "$files" | while read line;
