@@ -5,8 +5,9 @@ function help
     echo
     echo "To start the analysis, you must specify the path to the directory with the files"
     echo
-    echo "  ./$(basename $0) <path/to/folder> [<extension>]"
+    echo "  ./$(basename $0) [-D] <path/to/folder> [<extension>]"
     echo
+    echo "  -D          - Enable debug output"
     echo "  <extension> - Extension of files for analyze (all files if not set)"
     echo
 
