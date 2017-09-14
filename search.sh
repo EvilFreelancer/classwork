@@ -8,9 +8,10 @@ function help
     echo
     echo "To start the analysis, you must specify the path to the directory with the files"
     echo
-    echo "  ./$(basename $0) [-D] <path/to/folder> [<extension>]"
+    echo "  ./$(basename $0) [-D|-c] <path/to/folder> [<extension>]"
     echo
     echo "  -D          - Enable debug output"
+    echo "  -c          - Output in the CSV format"
     echo "  <extension> - Extension of files for analyze (all files if not set)"
     echo
 
@@ -25,10 +26,11 @@ folder="$1"
 extension="*"
 [ "x" != "x$2" ] && extension="*.$2"
 DEBUG="0"
+CSV="0"
 
 # Change variables if debug is enabled
 ### this code is compatible with all versions of BASH above 2
-if [ "$1" == "-D" ]
+if [ "$1" == "-D" ] || [ "$1" == "-c" ]
     then
         # Show help if second argv is empty
         [ "x" == "x$2" ] && help
@@ -38,6 +40,8 @@ if [ "$1" == "-D" ]
         [ "x" != "x$3" ] && extension="*.$3"
         DEBUG="1"
 fi
+
+[ "$1" == "-c" ] && DEBUG="0" && CSV="1"
 
 # Search for all files
 files=`find "$folder" -type f -iname "$extension" | sed -r 's/\ /\\\ /g'`
@@ -107,10 +111,11 @@ if [ "" != "$(echo -n "$files")" ]
         while read class
             do
                 count=`get "classwork" "CLASSWORK_COUNT_$class"`
-                files=`get "classwork" "CLASSWORK_FILES_$class" | sort | uniq | tr "\n" " "`
+                files=`get "classwork" "CLASSWORK_FILES_$class" | sort | uniq | tr "\n" " " | sed 's/[[:blank:]]*$//'`
                 files_count=`get "classwork" "CLASSWORK_FILES_$class" | sort | uniq | wc -l`
 
-                printf "%7d\t%-20s\t%-4s%s\n" "$count" "$class" "$files_count" "$files"
+                [ "$CSV" == "1" ] && printf "'%d','%s','%s','%s'\n" "$count" "$class" "$files_count" "$files"
+                [ "$CSV" == "0" ] && printf "%7d\t%-20s\t%-4s%s\n" "$count" "$class" "$files_count" "$files"
         done
 
         # New line
