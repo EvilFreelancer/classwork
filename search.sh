@@ -20,7 +20,7 @@ if [ "x" != "x$2" ]; then extension="*.$2"; else extension="*"; fi
 files=`find "$folder" -type f -name "$extension"`
 
 # Read all classes from all files
-echo "$files" | while read line;
+echo -n "$files" | while read line;
     do
         # Extract file name from line
         filename=`basename "$line"`
@@ -36,7 +36,7 @@ echo "$files" | while read line;
 done
 
 # Test if folder is not empty
-count=`echo "$files" | wc -l`
+count=`echo -n "$files" | wc -l`
 
 # If count of files more zero
 if [ "$count" != 0 ]; then
