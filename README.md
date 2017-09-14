@@ -6,16 +6,17 @@ A small script for finding and calculating count of CSS classes in files
 
     To start the analysis, you must specify the path to the directory with the files
     
-      ./search.sh <path/to/folder> [<extension>]
-    
+      ./search.sh [-D] <path/to/folder> [<extension>]
+
+      -D          - Enable debug output        
       <extension> - Extension of files for analyze (all files if not set)
 
 ## Example of usage
 
 ```bash
-./search.sh /some/absolute/path
+./search.sh -D /some/absolute/path
 ./search.sh /some/absolute/path html
 
 ./search.sh some/relative/path
-./search.sh some/relative/path php
+./search.sh -D some/relative/path php
 ```
