@@ -41,8 +41,6 @@ fi
 
 # Search for all files
 files=`find "$folder" -type f -iname "$extension" | sed -r 's/\ /\\\ /g'`
-echo "$files"
-exit
 
 # Read all classes from all files
 [ "$DEBUG" == "1" ] && echo "$files" | while read line;
