@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
 
+root=`pwd`
+cd "$root"
+
 function help
 {
     echo
@@ -36,11 +39,15 @@ if [ "$1" == "-D" ]
         DEBUG="1"
 fi
 
+#echo "$extension"
+#echo find "$folder" -type f -iname $extension
+#exit
+
 # Search for all files
 files=`find "$folder" -type f -iname "$extension"`
 
 # Read all classes from all files
-[ "$DEBUG" == "1" ] && echo -n "$files" | while read line;
+[ "$DEBUG" == "1" ] && echo "$files" | while read line;
     do
         # Extract file name from line
         filename=`basename "$line"`
@@ -55,29 +62,58 @@ files=`find "$folder" -type f -iname "$extension"`
         echo
 done
 
-# Test if folder is not empty
-count=`echo -n "$files" | wc -l`
+# MapArray prefix
+prefix=$(basename -- $0)
+# New tmp folder
+mapdir=$(mktemp -d)
+# Remove temp folder after we done
+trap 'rm -r ${mapdir}' EXIT
+
+put() {
+    [ "$#" != 3 ] && exit 1
+    mapname=$1; key=$2; value=$3
+    [ -d "${mapdir}/${mapname}" ] || mkdir "${mapdir}/${mapname}"
+    echo $value >"${mapdir}/${mapname}/${key}"
+}
+
+append() {
+    [ "$#" != 3 ] && exit 1
+    mapname=$1; key=$2; value=$3
+    [ -d "${mapdir}/${mapname}" ] || mkdir "${mapdir}/${mapname}"
+    echo $value >>"${mapdir}/${mapname}/${key}"
+}
+
+get() {
+    [ "$#" != 2 ] && exit 1
+    mapname=$1; key=$2
+    cat "${mapdir}/${mapname}/${key}"
+}
 
 # If count of files more zero
-if [ "$count" != 0 ]
+if [ "" != "$(echo -n "$files")" ]
     then
         # The title
         [ "$DEBUG" == "1" ] && echo ">>> Masterlist"
 
         # Search for all files
-        grep -Eoih -R class\=\"[^\"]*\" "$folder" | awk -F\" "{print \$2}" | sort | uniq --count | \
-        while read count class
+        grep -Eoi --with-filename class\=\"[^\"]*\" $files | awk -F\: '{print $1"\t"$2}' | sed -r 's/\tclass="(.*)"/\t\1/g' | \
+        while read file class
             do
-                # Matched files
-                files_match=`grep -R class\=\"[$class]*\" --files-with-matches "$folder"`
+                count=`get "classwork" "CLASSWORK_COUNT_$class" 2>/dev/null`
+                put "classwork" "CLASSWORK_COUNT_$class" $(($count+1))
 
-                # Names of matched files
-                files=`basename -a $files_match | tr "\n" " "`
+                # Append file path into cell
+                append "classwork" "CLASSWORK_FILES_$class" `basename $file`
+        done
 
-                # Count of matched files
-                files_count=`echo "$files_match" | wc -l`
+        # Search for all files
+        grep -Eoih class\=\"[^\"]*\" $files | awk -F\" "{print \$2}" | sort | uniq | \
+        while read class
+            do
+                count=`get "classwork" "CLASSWORK_COUNT_$class"`
+                files=`get "classwork" "CLASSWORK_FILES_$class" | sort | uniq | tr "\n" " "`
+                files_count=`get "classwork" "CLASSWORK_FILES_$class" | sort | uniq | wc -l`
 
-                # Print formatted string
                 printf "%7d\t%-20s\t%-4s%s\n" "$count" "$class" "$files_count" "$files"
         done
 
