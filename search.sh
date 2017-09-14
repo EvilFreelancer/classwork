@@ -16,11 +16,12 @@ function help
 if [ "x" == "x$1" ]; then help; else folder="$1"; fi
 if [ "x" != "x$2" ]; then extension="*.$2"; else extension="*"; fi
 
-find "$folder" -type f -name "$extension" | while read line;
-    do
-        # If files is found
-        found=true
+# Search for all files
+files=`find "$folder" -type f -name "$extension"`
 
+# Read all classes from all files
+echo "$files" | while read line;
+    do
         # Extract file name from line
         filename=`basename "$line"`
 
@@ -35,17 +36,19 @@ find "$folder" -type f -name "$extension" | while read line;
 done
 
 # Test if folder is not empty
-count=`ls -1 "$folder"/$extension 2>/dev/null | wc -l`
-if [ $count != 0 ]; then
+count=`echo "$files" | wc -l`
+
+# If count of files more zero
+if [ "$count" != 0 ]; then
     # The title
     echo ">>> Masterlist"
 
     # Search for all files
-    grep -Eoih class\=\"[^\"]*\" "$folder"/$extension | awk -F\" "{print \$2}" | sort | uniq --count | \
+    grep -Eoih -R class\=\"[^\"]*\" "$folder" | awk -F\" "{print \$2}" | sort | uniq --count | \
     while read count class
         do
             # Matched files
-            files_match=`grep class\=\"[$class]*\" --files-with-matches "$folder"/$extension`
+            files_match=`grep -R class\=\"[$class]*\" --files-with-matches "$folder"`
 
             # Names of matched files
             files=`basename -a $files_match | tr "\n" " "`

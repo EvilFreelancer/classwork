@@ -14,8 +14,8 @@ A small script for finding and calculating count of CSS classes in files
 
 ```bash
 ./search.sh /some/absolute/path
-./search.sh /some/absolute/path *.html
+./search.sh /some/absolute/path html
 
 ./search.sh some/relative/path
-./search.sh some/relative/path *.php
+./search.sh some/relative/path php
 ```
